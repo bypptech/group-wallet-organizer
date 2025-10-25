@@ -1,0 +1,145 @@
+.iot-control-app .webcam-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.iot-control-app .webcam-container h2 {
+  color: #444;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.iot-control-app .webcam-error {
+  background-color: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  color: #c62828;
+  font-weight: 500;
+}
+
+.iot-control-app .webcam-controls {
+  margin-bottom: 20px;
+}
+
+.iot-control-app .device-selector {
+  margin-bottom: 15px;
+}
+
+.iot-control-app .device-selector label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+.iot-control-app .device-selector select {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  font-size: 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.iot-control-app .device-selector select:hover:not(:disabled) {
+  border-color: #4CAF50;
+}
+
+.iot-control-app .device-selector select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.iot-control-app .start-btn {
+  background-color: #4CAF50;
+}
+
+.iot-control-app .start-btn:hover {
+  background-color: #45a049;
+}
+
+.iot-control-app .stop-btn {
+  background-color: #f44336;
+}
+
+.iot-control-app .stop-btn:hover {
+  background-color: #da190b;
+}
+
+.iot-control-app .video-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.iot-control-app .video-wrapper img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  background-color: #000;
+}
+
+.iot-control-app .video-wrapper img.active {
+  border: 3px solid #4CAF50;
+}
+
+.iot-control-app .video-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1a1a;
+  color: #888;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.iot-control-app .webcam-info {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.iot-control-app .webcam-info p {
+  margin: 5px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .iot-control-app .webcam-container {
+    padding: 15px;
+  }
+
+  .iot-control-app .video-wrapper video {
+    width: 100%;
+    height: auto;
+  }
+
+  .iot-control-app .device-selector select {
+    max-width: 100%;
+  }
+}

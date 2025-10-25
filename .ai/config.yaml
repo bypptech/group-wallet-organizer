@@ -1,0 +1,27 @@
+version: 1
+project:
+  name: bypp-aicoding-kit
+  description: Unified AI configuration for Claude/Gemini/Codex/Kiro
+roles:
+  implementer: Claude
+  spec: Gemini
+  governance: Kiro
+  cli: Codex
+techStack:
+  frontend: [react, vite, tailwind, shadcn, wouter, tanstack-query]
+  backend: [hono, node, drizzle]
+  contracts: [hardhat, solidity]
+qualityGates:
+  specFirst: true
+  testFirst: true
+  coverage: 0.9
+mcp:
+  servers:
+    - name: context7
+      type: stdio
+      command: npx
+      args: ["-y", "@upstash/context7-mcp"]
+    - name: sequential-thinking
+      type: stdio
+      command: npx
+      args: ["-y", "@modelcontextprotocol/server-sequential-thinking"]

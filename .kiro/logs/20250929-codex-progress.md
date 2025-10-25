@@ -1,0 +1,28 @@
+# family_wallet 進捗ログ 2025-09-29
+
+- EscrowRegistry / PolicyManager / GuardianModule / ERC20Paymaster の実装および Hardhat テスト（Escrow 基本フロー、Paymaster 日次上限）を追加。
+- API に `/api/family` ルーターを実装し、Vault/Escrow/Policy/Notification エンドポイントとサービス層（Drizzle、オンチェーンクライアント）を整備。
+- packages/shared にファミリーウォレット向けドメイン型を追加。
+- Drizzle スキーマに Vault メンバー・承認ログを追加し、Escrow タイムライン生成と Vault メンバー管理を実装。
+- Escrow API でオンチェーン `createEscrow` / `approveRelease` / `cancel` を呼び出せるようにし、Merkle proof 検証と Tx ハッシュ記録を追加。
+- サブグラフテンプレート（4.3）と Bundler/Paymaster クライアント共通化（4.4）を完了。
+- Web クライアント基盤（5.1）を構築。wagmi/WalletConnect による接続、Zustand ストア、ファミリーダッシュボード UI を実装。
+- モバイル基盤（5.2）を構築。Expo Router + WalletConnect RN を導入し、承認/キャンセル用の簡易コンソール画面を実装。
+- Shared パッケージ整備（5.3）を完了。API ルート定数、共通ユーティリティ、クエリキーを追加し、Web/Mobile/API 全体で再利用。
+- エスクロー作成 UI/UX（6.1）を追加。Web ダッシュボードにフォームを実装し、入力検証・トークン金額変換・React Query 再取得を組み込んだ。
+- 承認/リリースフロー（6.2）を追加。Escrow 一覧にアクションダイアログとタイムライン表示を実装し、Merkle proof 入力・API 呼び出しを連携。
+- ポリシー編集 UI（6.3）を追加。ポリシー作成・スケジュール・ファイナライズ/キャンセルをダッシュボードから操作可能にし、React Query キャッシュを連動。
+- モバイル承認体験（6.4）を拡張。WalletConnect セッション管理、QR スキャナー、Push 通知登録を追加し、承認画面をセッション状態と連携。
+- Paymaster API 連携（7.1）完了。`/api/family/paymaster/sponsor` エンドポイントとオンチェーンバランスチェックを実装。
+- クライアント fallback UI（7.2）完了。Web フォームでスポンサー可否チェックと fallback 表示、モバイル承認画面でスポンサー確認と ETH fallback 提示を実装。
+- Paymaster モニタリング（7.3）完了。Web ダッシュボードにヘルスカードを追加し、モバイルと API からスポンサー結果の理由を通知する仕組みを追加。
+- 次フェーズ: サブグラフ/通知機能（8.x）と pnpm 実行環境での結合テストを予定。
+- 通知システム向けドキュメントとテンプレート（環境変数サンプル・マイグレーションスクリプト）を追加し、Task 8.3 の実運用手順を整備。Tailwind 設定とスタイルを調整して Web ビルドを通過させ、`pnpm --filter @repo/web build` を確認。
+- Figma ワイヤーフレームの UI 要件を仕様に反映し、Web ダッシュボードにロール別メトリクスカードや状態出し分けを導入。モバイルは Expo Router のタブ構成（Home/Approvals/Timeline/Settings）へ刷新し、Push 登録や承認キューを実データに接続する準備を整備。
+- Storybook を導入し、`apps/web/src/components/ui/card` などのコンポーネントを figma2 トークンと同期したプレビューで検証可能にした。
+- Web UI を全面的に再スタイル。AppShell/ホーム/詳細/通知/Paymaster/Invite/Approval Hub/テーブルなどをガラスカード + グラデーションテーマで統一。
+- Expo モバイルタブ (Home/Group/Approvals/Timeline/Settings) を新テーマ + UI プリミティブ（card/badge/text）で再構成し、figma2 モバイル稿に沿ったデザインへ更新。
+- 共有デザイン定数とアクセント（グラデーション、メトリクスピル、フォントスケール）を定義し、Web/Mobile 双方で一貫したトーンを確保。
+- 今後の課題: Approvals Hub のライブセッション実装、アクセシビリティ検証、Storybook への追加ストーリー整備。
+- Storybook プレビューに AppShell デコレータを導入し、実稼働テーマ（背景・グラデーション・フォント）で UI を検証可能な状態にした。
+- 今後は Approvals Hub / Escrow Actions など複合コンポーネントのストーリー追加と、A11y チェック（フォーカスリング、ARIA）を整理する。

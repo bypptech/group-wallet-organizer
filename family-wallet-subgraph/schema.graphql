@@ -1,0 +1,181 @@
+"""
+Family Wallet Subgraph Schema
+Tracks escrow management, policies, approval flows, and audit logs
+"""
+
+type Vault @entity(immutable: false) {
+  id: Bytes! # address vaultAddress
+  vaultAddress: Bytes! # Smart contract address
+
+  # Relations
+  escrows: [Escrow!]! @derivedFrom(field: "vault")
+
+  # Metadata
+  createdAt: BigInt!
+  createdTx: Bytes!
+  blockNumber: BigInt!
+}
+
+type Member @entity(immutable: false) {
+  id: Bytes! # vaultId-address
+  vault: Vault!
+  address: Bytes!
+  role: String!
+  weight: Int!
+
+  # Metadata
+  addedAt: BigInt!
+  addedBy: Bytes!
+  addedTx: Bytes!
+}
+
+type Policy @entity(immutable: false) {
+  id: Bytes! # bytes32 policyId
+  vault: Vault!
+  threshold: Int!
+  timelock: BigInt! # seconds
+  rolesRoot: Bytes! # Merkle root
+  ownersRoot: Bytes! # Merkle root
+  maxAmount: BigInt
+  active: Boolean!
+
+  # Metadata
+  createdAt: BigInt!
+  createdBy: Bytes!
+  createdTx: Bytes!
+}
+
+type Escrow @entity(immutable: false) {
+  id: ID! # uint256 escrowId as string
+  escrowId: BigInt! # uint256 escrowId
+  vault: Vault!
+  vaultAddress: Bytes!
+  requester: Bytes!
+  recipient: Bytes!
+  tokenAddress: Bytes! # ERC20 token address
+  amount: BigInt!
+  escrowType: Int! # EscrowType enum
+  approvalType: Int! # ApprovalType enum
+
+  # Status
+  state: EscrowState!
+  title: String!
+  description: String!
+
+  # Timestamps
+  scheduledReleaseAt: BigInt!
+  expiresAt: BigInt!
+  releasedAt: BigInt
+  cancelledAt: BigInt
+
+  # Metadata
+  metadataHash: Bytes!
+
+  # Relations
+  approvals: [Approval!]! @derivedFrom(field: "escrow")
+  events: [TimelineEvent!]! @derivedFrom(field: "escrow")
+
+  # Metadata
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  createdTx: Bytes!
+  createdBy: Bytes!
+  blockNumber: BigInt!
+}
+
+enum EscrowState {
+  DRAFT
+  PENDING
+  APPROVED
+  READY
+  RELEASED
+  CANCELLED
+  EXPIRED
+}
+
+type Approval @entity(immutable: true) {
+  id: ID! # escrowId-approver-timestamp
+  escrow: Escrow!
+  escrowId: BigInt!
+  approver: Bytes!
+  timestamp: BigInt!
+  txHash: Bytes!
+  currentApprovals: Int!
+  requiredApprovals: Int!
+  blockNumber: BigInt!
+}
+
+type TimelineEvent @entity(immutable: true) {
+  id: ID! # txHash-logIndex
+  escrow: Escrow!
+  escrowId: BigInt!
+  eventType: EventType!
+  actor: Bytes!
+  timestamp: BigInt!
+  txHash: Bytes!
+
+  # State change specific fields
+  previousState: Int
+  newState: Int
+
+  # Cancellation specific fields
+  reason: String
+
+  # Block info
+  blockNumber: BigInt!
+  blockHash: Bytes!
+  logIndex: BigInt!
+}
+
+enum EventType {
+  ESCROW_CREATED
+  APPROVAL_GRANTED
+  ESCROW_STATE_CHANGED
+  ESCROW_RELEASED
+  ESCROW_CANCELLED
+}
+
+type VaultStats @entity(immutable: false) {
+  id: Bytes! # vaultId
+  vault: Vault!
+
+  # Counters
+  totalEscrows: Int!
+  pendingEscrows: Int!
+  approvedEscrows: Int!
+  releasedEscrows: Int!
+  cancelledEscrows: Int!
+
+  # Members
+  totalMembers: Int!
+
+  # Last update
+  lastUpdated: BigInt!
+}
+
+type GlobalStats @entity(immutable: false) {
+  id: Bytes! # "global"
+
+  # Counters
+  totalVaults: Int!
+  totalEscrows: Int!
+  totalApprovals: Int!
+
+  # Last update
+  lastUpdated: BigInt!
+}
+
+type DailyStats @entity(immutable: false) {
+  id: Bytes! # timestamp-day
+  date: Int! # Unix timestamp (day start)
+
+  # Daily counters
+  escrowsCreated: Int!
+  escrowsApproved: Int!
+  escrowsReleased: Int!
+  escrowsCancelled: Int!
+
+  # Active addresses
+  activeAddresses: [Bytes!]!
+  newVaults: Int!
+}

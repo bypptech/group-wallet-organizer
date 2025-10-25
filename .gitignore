@@ -1,0 +1,57 @@
+# Node / general
+node_modules
+.DS_Store
+*.log
+*.tar.gz
+*.tgz
+*.zip
+.env
+.env.*
+!.env.example
+.pnpm-debug.log*
+npm-debug.log*
+yarn-error.log*
+
+# Build artifacts
+dist
+build
+coverage
+tmp
+temp
+.cache
+.parcel-cache
+
+# Vite/Frontend
+server/public
+vite.config.ts.*
+
+# Hardhat/Foundry
+artifacts
+cache
+typechain
+typechain-types
+.openzeppelin
+.coverage_artifacts
+coverage.json
+
+# OS/IDE
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Local development files
+.local/
+.config/
+.claude/settings.local.json
+.mocharc.json
+.ts-node.json
+apps/api/.dev.vars
+gas-report.txt
+*.backup
+*.bak
+
+# Agent state files
+.agent_state_*.bin
+progress_tracker.md

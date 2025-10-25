@@ -1,0 +1,28 @@
+# Family Wallet Code Owners
+
+# Default owner for everything
+* @family-wallet/core-team
+
+# Web frontend
+/apps/web/ @family-wallet/frontend-team
+
+# API backend
+/apps/api/ @family-wallet/backend-team
+
+# Mobile app
+/apps/mobile/ @family-wallet/mobile-team
+
+# Smart contracts
+/contracts/ @family-wallet/contracts-team
+
+# Subgraph
+/family-wallet-subgraph/ @family-wallet/subgraph-team
+
+# Documentation
+/docs/ @family-wallet/docs-team
+/.kiro/ @family-wallet/docs-team
+
+# Configuration files
+/.github/ @family-wallet/devops-team
+/package.json @family-wallet/devops-team
+/pnpm-workspace.yaml @family-wallet/devops-team

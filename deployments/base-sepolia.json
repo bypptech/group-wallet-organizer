@@ -1,0 +1,13 @@
+{
+  "network": "baseSepolia",
+  "chainId": 84532,
+  "contracts": {
+    "EscrowRegistry": "0x636b998315e77408806CccFCC93af4D1179afc2f",
+    "PolicyManager": "0xE903dc0061212Abd78668d81a8c5F02C603Dc19E",
+    "RoleVerifier": "0xA68B80144d3291D5b53cE8C62c306fE195668d60",
+    "GuardianModule": "0x18e89214CB9ED4bC16362b158C5D0E35d87c7828",
+    "ERC20Paymaster": "0xb4F5880bbAD08803dc9F473b427b1Bc385431D16"
+  },
+  "deployer": "0x1cEF170132c776380c1575eC18aA0cfBDE497033",
+  "timestamp": "2025-10-04T06:04:50.313Z"
+}

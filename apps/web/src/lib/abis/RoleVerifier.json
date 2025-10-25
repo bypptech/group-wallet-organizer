@@ -1,0 +1,290 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "enum RoleVerifier.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "canApprove",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "canApprove",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum RoleVerifier.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "canCreateEscrow",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "canCreate",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum RoleVerifier.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "canView",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "canView",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "member",
+        "type": "address"
+      },
+      {
+        "internalType": "enum RoleVerifier.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "generateLeaf",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "leaf",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "generateOwnerLeaf",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "leaf",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum RoleVerifier.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "getRoleLevel",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "level",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum RoleVerifier.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "getRoleName",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "roleName",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum RoleVerifier.Role",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum RoleVerifier.Role",
+        "name": "requiredRole",
+        "type": "uint8"
+      }
+    ],
+    "name": "hasPermission",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "hasPermission",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "ownersRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "proof",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "verifyOwner",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "isValid",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "owners",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "ownersRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32[][]",
+        "name": "proofs",
+        "type": "bytes32[][]"
+      }
+    ],
+    "name": "verifyOwners",
+    "outputs": [
+      {
+        "internalType": "bool[]",
+        "name": "results",
+        "type": "bool[]"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "member",
+        "type": "address"
+      },
+      {
+        "internalType": "enum RoleVerifier.Role",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "rolesRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "proof",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "verifyRole",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "isValid",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "members",
+        "type": "address[]"
+      },
+      {
+        "internalType": "enum RoleVerifier.Role[]",
+        "name": "roles",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "rolesRoot",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32[][]",
+        "name": "proofs",
+        "type": "bytes32[][]"
+      }
+    ],
+    "name": "verifyRoles",
+    "outputs": [
+      {
+        "internalType": "bool[]",
+        "name": "results",
+        "type": "bool[]"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]

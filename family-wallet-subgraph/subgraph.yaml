@@ -1,0 +1,39 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: EscrowRegistry
+    network: base-sepolia
+    source:
+      address: "0x636b998315e77408806CccFCC93af4D1179afc2f"
+      abi: EscrowRegistry
+      startBlock: 31894658
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Vault
+        - Escrow
+        - Approval
+        - TimelineEvent
+        - VaultStats
+        - GlobalStats
+      abis:
+        - name: EscrowRegistry
+          file: ./abis/EscrowRegistry.json
+      eventHandlers:
+        - event: EscrowCreated(indexed uint256,indexed address,indexed address,address,address,uint256,uint8)
+          handler: handleEscrowCreated
+        - event: ApprovalGranted(indexed uint256,indexed address,uint256,uint256)
+          handler: handleApprovalGranted
+        - event: EscrowReleased(indexed uint256,indexed address,address,uint256)
+          handler: handleEscrowReleased
+        - event: EscrowCancelled(indexed uint256,indexed address,string)
+          handler: handleEscrowCancelled
+        - event: EscrowStateChanged(indexed uint256,uint8,uint8,indexed address)
+          handler: handleEscrowStateChanged
+      file: ./src/mapping.ts

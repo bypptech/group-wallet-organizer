@@ -1,0 +1,37 @@
+name: AI Config Sync
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  sync-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install minimal deps
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund || npm i --ignore-scripts --no-audit --no-fund
+
+      - name: Run ai:migrate
+        run: npm run ai:migrate
+
+      - name: Run agents:sync
+        run: npm run agents:sync
+
+      - name: Check for uncommitted changes
+        run: |
+          git add -A
+          if ! git diff --cached --quiet; then
+            echo "Found drift after ai:migrate/agents:sync. Commit generated files or update .ai/.templates." >&2
+            git status --porcelain
+            exit 1
+          fi

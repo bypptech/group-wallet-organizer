@@ -1,0 +1,67 @@
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Root workspace
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    groups:
+      workspace-dependencies:
+        patterns:
+          - "*"
+
+  # Web app
+  - package-ecosystem: "npm"
+    directory: "/apps/web"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "web"
+
+  # API
+  - package-ecosystem: "npm"
+    directory: "/apps/api"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "api"
+
+  # Mobile
+  - package-ecosystem: "npm"
+    directory: "/apps/mobile"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "mobile"
+
+  # Contracts
+  - package-ecosystem: "npm"
+    directory: "/contracts"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "contracts"
+
+  # Subgraph
+  - package-ecosystem: "npm"
+    directory: "/family-wallet-subgraph"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "subgraph"

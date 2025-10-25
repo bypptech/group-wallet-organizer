@@ -1,0 +1,349 @@
+実装指示（要件⑤：E2E実行可能性）
+0) 方針（結論）
+
+スマコンは Foundryを正、Hardhatをオプションで併存（両対応）。
+
+E2Eは Playwrightを正、Cypressをオプション（既存プロジェクト移行も見据えて二刀流を許容）。
+
+既存の spec-init.sh / tdd-cycle.sh / reverse-gen.sh に加え、実走するラッパを追加：
+
+contracts-run.sh（Foundry/Hardhatのbuild+test+local node）
+
+web-run.sh（webビルド＆devサーバ起動）
+
+e2e-run.sh（Playwright/Cypress実行）
+
+all-in-one.sh（上記を順に実行する統合ランナー）
+
+以降の手順は integration/e2e-executable ブランチで作業。
+
+1) ディレクトリと依存の追加
+/contracts/              # スマコン（Foundry/Hardhatの併存）
+  ├─ foundry.toml
+  ├─ script/
+  ├─ src/
+  ├─ test/               # Foundryのテスト
+  └─ hardhat/            # Hardhat併存（任意）
+      ├─ hardhat.config.ts
+      ├─ scripts/
+      └─ test/           # Hardhatのテスト
+
+/web/                    # フロント（既存の構成に合わせて）
+  ├─ package.json
+  ├─ src/
+  └─ tests-e2e/          # Playwright/Cypressのテスト
+
+/scripts/
+  ├─ contracts-run.sh    # 新規
+  ├─ web-run.sh          # 新規
+  ├─ e2e-run.sh          # 新規
+  └─ all-in-one.sh       # 新規
+
+/.github/workflows/
+  └─ ci.yml              # GitHub Actions（新規）
+
+1-1) Foundry 導入
+
+グローバル：curl -L https://foundry.paradigm.xyz | bash && foundryup
+
+contracts/foundry.toml（最小例）
+
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+remappings = []
+optimizer = true
+optimizer_runs = 200
+evm_version = "shanghai"
+
+
+サンプル契約 contracts/src/Counter.sol
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract Counter {
+    uint256 public number;
+    function setNumber(uint256 newNumber) public { number = newNumber; }
+    function increment() public { number++; }
+}
+
+
+テスト contracts/test/Counter.t.sol
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "forge-std/Test.sol";
+import "../src/Counter.sol";
+
+contract CounterTest is Test {
+    Counter c;
+    function setUp() public { c = new Counter(); }
+    function testIncrement() public {
+        c.increment();
+        assertEq(c.number(), 1);
+    }
+}
+
+
+依存初期化：cd contracts && forge init --no-commit . && forge build && forge test -vv
+
+1-2) Hardhat 併存（任意）
+
+cd contracts/hardhat && npm init -y && npm i -D hardhat ts-node typescript @nomicfoundation/hardhat-toolbox
+
+contracts/hardhat/hardhat.config.ts（最小）
+
+import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
+
+const config: HardhatUserConfig = {
+  solidity: { version: "0.8.20", settings: { optimizer: { enabled: true, runs: 200 } } }
+};
+export default config;
+
+
+サンプル contracts/hardhat/contracts/Counter.sol を上と同一で配置、npx hardhat test が通ること。
+
+1-3) Playwright 導入（正）
+
+cd web && npm i -D @playwright/test && npx playwright install
+
+web/playwright.config.ts（最小）
+
+import { defineConfig } from "@playwright/test";
+export default defineConfig({
+  testDir: "./tests-e2e",
+  use: { headless: true, baseURL: process.env.E2E_BASE_URL || "http://localhost:5173" },
+});
+
+
+サンプルE2E web/tests-e2e/smoke.spec.ts
+
+import { test, expect } from "@playwright/test";
+test("page loads", async ({ page }) => {
+  await page.goto("/");
+  await expect(page).toHaveTitle(/(App|Vite|Next)/);
+});
+
+1-4) Cypress 併存（任意）
+
+cd web && npm i -D cypress
+
+web/cypress/e2e/smoke.cy.ts をPlaywrightと同等の最小で作成。
+
+2) ラッパスクリプトの実装（/scripts）
+
+すべて chmod +x を忘れずに。
+
+2-1) contracts-run.sh
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+MODE="${1:-foundry}"  # foundry | hardhat
+case "$MODE" in
+  foundry)
+    pushd contracts >/dev/null
+    forge build
+    forge test -vv
+    # ローカルノード（anvil）起動は別ターミナル推奨だが、ここでは必要時に起動
+    # anvil --block-time 1 &
+    popd >/dev/null
+    ;;
+  hardhat)
+    pushd contracts/hardhat >/dev/null
+    npx hardhat compile
+    npx hardhat test
+    popd >/dev/null
+    ;;
+  *)
+    echo "Usage: $0 [foundry|hardhat]"; exit 1;
+esac
+
+2-2) web-run.sh
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+pushd web >/dev/null
+
+if [ -f package.json ]; then
+  # Vite/Next どちらでも通る想定の汎用コマンド
+  if npm run -s build >/dev/null 2>&1; then
+    npm run build
+  fi
+  if npm run -s dev >/dev/null 2>&1; then
+    npm run dev &
+    echo $! > ../.tmp_web_pid
+  fi
+else
+  echo "web/package.json が見つかりません"; exit 1
+fi
+
+popd >/dev/null
+
+2-3) e2e-run.sh
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+E2E_TOOL="${1:-playwright}"  # playwright | cypress
+BASE_URL="${2:-http://localhost:5173}"
+
+pushd web >/dev/null
+case "$E2E_TOOL" in
+  playwright)
+    export E2E_BASE_URL="$BASE_URL"
+    npx playwright test
+    ;;
+  cypress)
+    npx cypress run --config baseUrl="$BASE_URL"
+    ;;
+  *)
+    echo "Usage: $0 [playwright|cypress] [baseURL]"; exit 1
+esac
+popd >/dev/null
+
+2-4) all-in-one.sh
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+# 1) スマコン
+./scripts/contracts-run.sh foundry
+
+# 2) Web (ビルド＆開発サーバ)
+./scripts/web-run.sh
+
+# 3) E2E
+./scripts/e2e-run.sh playwright http://localhost:5173
+
+# 終了処理（devサーバが起動していれば落とす）
+if [ -f ./.tmp_web_pid ]; then
+  kill "$(cat ./.tmp_web_pid)" || true
+  rm ./.tmp_web_pid
+fi
+
+3) npm scripts（/web＆ルート）
+3-1) /web/package.json に共通フック
+{
+  "scripts": {
+    "build": "vite build || next build",
+    "dev": "vite || next dev",
+    "e2e:play": "playwright test",
+    "e2e:cy": "cypress run"
+  }
+}
+
+3-2) ルート package.json（任意）
+{
+  "scripts": {
+    "contracts": "bash ./scripts/contracts-run.sh foundry",
+    "contracts:hh": "bash ./scripts/contracts-run.sh hardhat",
+    "web": "bash ./scripts/web-run.sh",
+    "e2e": "bash ./scripts/e2e-run.sh playwright",
+    "e2e:cy": "bash ./scripts/e2e-run.sh cypress",
+    "all": "bash ./scripts/all-in-one.sh"
+  }
+}
+
+4) CI 配線（GitHub Actions）
+
+.github/workflows/ci.yml
+
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Foundry
+      - name: Install Foundry
+        run: |
+          curl -L https://foundry.paradigm.xyz | bash
+          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+          foundryup
+
+      # Contracts
+      - name: Contracts build & test (Foundry)
+        run: |
+          cd contracts
+          forge build
+          forge test -vv
+
+      # Web deps
+      - name: Web install
+        run: |
+          cd web
+          npm ci || npm i
+
+      # Web build (Vite / Next 互換)
+      - name: Web build
+        run: |
+          cd web
+          npm run build || true
+
+      # E2E (Playwright)
+      - name: Install Playwright browsers
+        run: |
+          cd web
+          npx playwright install --with-deps
+      - name: Run E2E (Playwright)
+        env:
+          E2E_BASE_URL: http://localhost:5173
+        run: |
+          # 簡易HTTPサーバで静的配信（Viteのpreview/Nextのstartなど、任意で調整）
+          cd web
+          (npm run dev &) ; sleep 5
+          npx playwright test
+
+
+後続で Cypress ジョブを追加する場合は matrix で e2e=playwright|cypress を回す。
+
+5) README 追補（「実際に走る手順」を明記）
+
+README の「統合フロー」の末尾に下記を必ず追加：
+
+## 実行（ローカル一発）
+
+# 1) 依存
+#  - Foundry: `foundryup`
+#  - Node: v20 以上
+#  - Playwright: `npx playwright install`
+
+# 2) 一発実行
+npm run all
+# → contracts(Foundry) → web(build/dev) → e2e(Playwright) が順に走る
+
+## 個別の実行
+npm run contracts       # Foundryでスマコンbuild+test
+npm run contracts:hh    # Hardhatでbuild+test（任意）
+npm run web             # フロント起動
+npm run e2e             # Playwright実行
+npm run e2e:cy          # Cypress実行（任意）
+
+6) 完了判定（合格ライン）
+
+ローカルで npm run all が無人完走し、
+
+Foundryの forge test が PASS
+
+Webがビルド／起動
+
+Playwright が PASS
+を満たす。
+
+GitHub Actions（ci.yml）が PR時にグリーン。
+
+README に「ローカル一発」「個別コマンド」「CIの挙動」が明記されている。

@@ -1,0 +1,9 @@
+specFirst: true
+testFirst: true
+coverage:
+  minimum: 0.9
+contracts:
+  auditRequired: true
+  gasReport: true
+frontend:
+  a11yChecklist: true

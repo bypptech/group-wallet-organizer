@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo.api",
+    "baseUrl": "."
+  },
+  "include": ["src"]
+}
