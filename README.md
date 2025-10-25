@@ -2,15 +2,15 @@ A Multi-Signature Wallet Management System on Base Network
 
 **Family Wallet** is a Web3 application that enables families and groups to securely manage funds with escrow control through multiple approvers. It leverages Account Abstraction (ERC-4337) to provide gasless transactions and flexible policy management.
 
-## ✨ Features
+## Features
 
-- **🔐 Multi-Signature Support**: Secure fund management with multiple approvers
-- **⛽ Gasless Transactions**: Seamless UX through Account Abstraction (ERC-4337)
-- **👥 Flexible Access Control**: Role-based permission management (Owner/Admin/Member)
-- **🌐 Multi-Chain**: Support for Base Sepolia and Ethereum Sepolia
-- **🎨 Demo Mode**: Experience features without wallet connection
+- **Multi-Signature Support**: Secure fund management with multiple approvers
+- **Gasless Transactions**: Seamless UX through Account Abstraction (ERC-4337)
+- **Flexible Access Control**: Role-based permission management (Owner/Admin/Member)
+- **Multi-Chain**: Support for Base Sepolia and Ethereum Sepolia
+- **Demo Mode**: Experience features without wallet connection
 
-## 🎯 Main Features
+## Main Features
 
 ### Group Wallet Management
 - Share wallets with multiple members
@@ -33,7 +33,7 @@ A Multi-Signature Wallet Management System on Base Network
 - Customizable signature verification
 - Efficient transaction submission via Bundler
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
