@@ -1,4 +1,4 @@
-A Multi-Signature Wallet Management System on Base Network
+## A Multi-Signature Wallet Management System on Base Network
 
 **Family Wallet** is a Web3 application that enables families and groups to securely manage funds with escrow control through multiple approvers. It leverages Account Abstraction (ERC-4337) to provide gasless transactions and flexible policy management.
 
